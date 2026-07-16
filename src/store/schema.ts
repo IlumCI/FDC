@@ -20,6 +20,16 @@ export const HistoryEntry = z.object({
 })
 export type HistoryEntry = z.infer<typeof HistoryEntry>
 
+// Gamification state (Duolingo/Sololearn feel). Persisted inside startup.json
+// so it exports/imports with everything else.
+export const Game = z.object({
+  xp: z.number().default(0),
+  streakCount: z.number().default(0),
+  lastActiveDay: z.string().default(''), // local YYYY-MM-DD of last completed lesson
+  achievements: z.array(z.string()).default([]),
+})
+export type Game = z.infer<typeof Game>
+
 export const Meta = z.object({
   createdAt: z.number(),
   updatedAt: z.number(),
@@ -28,6 +38,10 @@ export const Meta = z.object({
   completedLessons: z.array(z.string()).default([]),
   quizResults: z.record(z.string(), z.number()).default({}), // lessonId -> score 0..1
   history: z.array(HistoryEntry).default([]),
+  game: Game.default({ xp: 0, streakCount: 0, lastActiveDay: '', achievements: [] }),
+  // lessonId -> question step-ids still missed after the retry round; replayed
+  // as warm-up review at the start of the next lesson.
+  reviewQueue: z.record(z.string(), z.array(z.string())).default({}),
 })
 
 export const Thesis = z.object({

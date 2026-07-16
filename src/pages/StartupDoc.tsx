@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { useStartup } from '../store/useStartup'
 import { fmtMoney, fmtNum } from '../lib/unitEconomics'
+import { ACHIEVEMENTS, levelFromXp } from '../game/achievements'
+import { displayedStreak } from '../lib/day'
 
 export function StartupDoc() {
   const startup = useStartup((s) => s.startup)
@@ -66,6 +68,38 @@ export function StartupDoc() {
       </div>
 
       {msg && <div className="text-sm text-accent">{msg}</div>}
+
+      {/* Progress & achievements */}
+      <section className="bg-panel border border-line rounded-xl p-4">
+        <div className="flex items-center gap-4 mb-4">
+          <Kv k="Level" v={String(levelFromXp(startup.meta.game.xp))} />
+          <Kv k="XP" v={String(startup.meta.game.xp)} />
+          <Kv k="Streak" v={`🔥 ${displayedStreak(startup.meta.game.streakCount, startup.meta.game.lastActiveDay)}`} />
+        </div>
+        <h2 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted">Achievements</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {ACHIEVEMENTS.map((a) => {
+            const got = startup.meta.game.achievements.includes(a.id)
+            return (
+              <div
+                key={a.id}
+                className={`flex items-center gap-2 rounded-lg border p-2 ${
+                  got ? 'border-accent/40 bg-accent/5' : 'border-line opacity-50'
+                }`}
+                title={a.blurb}
+              >
+                <div className="text-2xl grayscale-0" style={{ filter: got ? 'none' : 'grayscale(1)' }}>
+                  {a.emoji}
+                </div>
+                <div>
+                  <div className="text-xs font-medium">{a.title}</div>
+                  <div className="text-[10px] text-muted leading-tight">{got ? a.blurb : 'Locked'}</div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </section>
 
       {/* Unit economics summary — the one artifact filled so far */}
       <section className="bg-panel border border-line rounded-xl p-4">

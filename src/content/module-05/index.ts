@@ -212,7 +212,7 @@ $$\\text{lifetime} \\approx \\frac{1}{c}$$
 So 5% monthly churn ⇒ ~20-month lifetime. But that shortcut assumes *constant* churn, which is almost never true.`,
       reframe: {
         analogy: `A retention curve is a **survival curve**, and expected lifetime is **MTTF** — mean time to failure. You already integrate the survival function to get expected time-to-live from a decay process; a customer base is the same math with "failure" = churn. Constant hazard ⇒ exponential decay ⇒ $\\text{lifetime} = 1/\\text{churn}$, exactly like $\\text{MTTF} = 1/\\lambda$ for a constant failure rate.`,
-        breaks: `Real retention is **not** a constant-hazard process. Two deviations dominate: an **onboarding cliff** (early hazard is much higher — users who never activate churn fast), and a **loyal core** where the curve *flattens* toward an asymptote instead of decaying to zero. Both mean the $1/c$ shortcut is wrong — it typically *underestimates* lifetime for the survivors while *overestimating* it across the cliff. When the curve flattens, always integrate the real points; don't fit a single exponential.`,
+        breaks: `Real retention is **not** a constant-hazard process. Two deviations dominate: an **onboarding cliff** (early hazard is much higher — users who never activate churn fast), and a **loyal core** where the curve *flattens* toward an asymptote instead of decaying to zero. Both mean the $\\frac{1}{c}$ shortcut is wrong — it typically *underestimates* lifetime for the survivors while *overestimating* it across the cliff. When the curve flattens, always integrate the real points; don't fit a single exponential.`,
       },
       workedExample: `**Meridian's** measured retention (one cohort):
 
@@ -227,11 +227,11 @@ So 5% monthly churn ⇒ ~20-month lifetime. But that shortcut assumes *constant*
 
 Integrate trapezoidally (width × average height, height as a fraction):
 
-- 0→1: $1 \\times 0.94 = 0.94$
-- 1→3: $2 \\times 0.81 = 1.62$
-- 3→6: $3 \\times 0.685 = 2.055$
-- 6→12: $6 \\times 0.575 = 3.45$
-- 12→24: $12 \\times 0.465 = 5.58$
+- 0→1: $(1)(0.94) = 0.94$
+- 1→3: $(2)(0.81) = 1.62$
+- 3→6: $(3)(0.685) = 2.055$
+- 6→12: $(6)(0.575) = 3.45$
+- 12→24: $(12)(0.465) = 5.58$
 
 Sum ≈ **13.6 months** — this is the lifetime we borrowed in lesson 5.2, now derived. Note the curve is still at 41% at month 24 and clearly **flattening**, so 13.6 is a *lower bound* (we truncated the tail). A naive "1/churn" using month-1 churn (12%) would say ~8 months — badly low, because it extrapolates the onboarding cliff across the whole life. Integrating the real curve is why Meridian's LTV is $422, not $250.`,
       branch: {
