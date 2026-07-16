@@ -33,7 +33,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2}'],
+        // Include md/csv so bundled document templates are available offline.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2,md,csv}'],
         // The Anthropic API is never precached — AI is a live, opt-in call.
         navigateFallbackDenylist: [/^\/api/],
       },

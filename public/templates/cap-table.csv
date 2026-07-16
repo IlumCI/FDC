@@ -1,0 +1,12 @@
+Cap Table Template,,,,
+Educational template — not legal or financial advice. Confirm with counsel before relying on it.,,,,
+,,,,
+Holder,Security type,Shares,Ownership %,Notes
+Founder 1,Common,4000000,,4-yr vest / 1-yr cliff
+Founder 2,Common,4000000,,4-yr vest / 1-yr cliff
+Option pool (unallocated),Options,1500000,,For early hires
+Investor (SAFE/priced),Preferred,,,Converts at cap/discount
+,,,,
+TOTAL,,,100%,Ownership % = holder shares / total shares
+,,,,
+"Dilution note: post-money % = your shares / (total shares + new shares issued). Every new raise/option grant dilutes existing holders. Model each round explicitly.",,,,

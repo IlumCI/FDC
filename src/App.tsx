@@ -5,6 +5,7 @@ import { Home } from './pages/Home'
 import { LessonPage } from './pages/LessonPage'
 import { Settings } from './pages/Settings'
 import { StartupDoc } from './pages/StartupDoc'
+import { Venture } from './pages/Venture'
 
 function NavItem({ to, children }: { to: string; children: React.ReactNode }) {
   return (
@@ -41,7 +42,7 @@ export default function App() {
             </div>
           </NavLink>
           <NavItem to="/">Course</NavItem>
-          <NavItem to="/startup">My company</NavItem>
+          <NavItem to="/venture">Venture</NavItem>
           <NavItem to="/settings">Settings</NavItem>
         </div>
       </header>
@@ -53,6 +54,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/lesson/:id" element={<LessonPage />} />
+            <Route path="/venture" element={<Venture />} />
             <Route path="/startup" element={<StartupDoc />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />

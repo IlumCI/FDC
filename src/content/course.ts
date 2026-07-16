@@ -2,6 +2,21 @@
 // is authored deep in this build; the rest render as "planned" so the learner
 // sees the whole compile pipeline they're working through.
 
+export interface Season {
+  id: 1 | 2
+  title: string
+  subtitle: string
+}
+
+export const SEASONS: Season[] = [
+  { id: 1, title: 'Semester 1 · Foundations', subtitle: 'Compile a simulated company end-to-end — learn the whole business canon.' },
+  {
+    id: 2,
+    title: 'Semester 2 · Building for Real',
+    subtitle: 'Graduate level. Drop the toy — build your ACTUAL startup with real data, real platforms, and real documents.',
+  },
+]
+
 export interface RoadmapModule {
   id: number
   title: string

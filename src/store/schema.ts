@@ -93,6 +93,37 @@ export const Pricing = z.object({
 // light until their modules are authored.
 const OpenSlot = z.record(z.string(), z.unknown()).default({})
 
+// --- Season 2: the learner's REAL venture (not the simulated toy) ---
+// Tracks real-world actions: platform tasks done (with proof), documents
+// produced, and milestones hit. Distinct from the simulated slots above.
+export const RealTask = z.object({
+  label: z.string().default(''),
+  done: z.boolean().default(false),
+  proof: z.string().default(''), // URL / text / number the learner logs
+  link: z.string().default(''),
+  at: z.number().nullable().default(null),
+})
+export const RealDoc = z.object({
+  label: z.string().default(''),
+  status: z.enum(['todo', 'in-progress', 'done']).default('todo'),
+  link: z.string().default(''), // learner's filled copy
+  at: z.number().nullable().default(null),
+})
+export const RealMilestone = z.object({
+  label: z.string().default(''),
+  done: z.boolean().default(false),
+  note: z.string().default(''),
+  at: z.number().nullable().default(null),
+})
+export const RealProject = z.object({
+  companyName: z.string().default(''),
+  startedAt: z.number().nullable().default(null),
+  tasks: z.record(z.string(), RealTask).default({}),
+  documents: z.record(z.string(), RealDoc).default({}),
+  milestones: z.record(z.string(), RealMilestone).default({}),
+})
+export type RealProject = z.infer<typeof RealProject>
+
 export const Startup = z.object({
   meta: Meta,
   thesis: Thesis.default({ domain: '', oneLiner: '' }),
@@ -107,6 +138,7 @@ export const Startup = z.object({
   capital: OpenSlot, // M10
   legal: OpenSlot, // M11
   strategy: OpenSlot, // M12
+  realProject: RealProject.default({}), // Season 2 — the real venture
 })
 export type Startup = z.infer<typeof Startup>
 

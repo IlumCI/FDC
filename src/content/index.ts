@@ -31,6 +31,14 @@ export const MODULES: Module[] = [
   module12,
 ]
 
+export function moduleSeason(m: Module): number {
+  return m.season ?? 1
+}
+
+export function modulesBySeason(season: number): Module[] {
+  return MODULES.filter((m) => moduleSeason(m) === season)
+}
+
 export function getModule(id: number): Module | undefined {
   return MODULES.find((m) => m.id === id)
 }

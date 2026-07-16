@@ -4,7 +4,7 @@ import { UnitEconomicsArtifact } from '../lesson/artifacts/UnitEconomicsArtifact
 import { gradeFreeResponse, hasKey } from '../ai/client'
 import { useStartup, type WritableSlot } from '../store/useStartup'
 import type { FormField } from '../lesson/types'
-import type { Step } from './steps'
+import { gradeStep, type Step, type Answer } from './steps'
 
 // Presentational single-focus cards. The player owns navigation and the
 // primary CHECK/CONTINUE button; these render content and (for choices) surface
@@ -253,6 +253,313 @@ export function FreeCard({ step }: { step: Extract<Step, { kind: 'free' }> }) {
         <div className="text-xs text-muted mt-2">Add an Anthropic key in Settings to have this graded against your numbers.</div>
       )}
       {grade && <div className="mt-3 bg-panel border border-accent/40 rounded-xl p-3 text-sm whitespace-pre-wrap">{grade}</div>}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Season 2 graded formats (controlled by the player: answer + setAnswer + checked)
+// ---------------------------------------------------------------------------
+
+function Verdict({ correct, children }: { correct: boolean; children: React.ReactNode }) {
+  return (
+    <div className={`mt-4 rounded-xl p-3 border ${correct ? 'border-accent/50 bg-accent/5' : 'border-warn/50 bg-warn/5'}`}>
+      <div className={`text-sm font-semibold mb-1 ${correct ? 'text-accent' : 'text-warn'}`}>{correct ? '✓ Correct' : '✗ Not quite'}</div>
+      <div className="text-sm">{children}</div>
+    </div>
+  )
+}
+
+export function NumericCard({
+  step,
+  answer,
+  setAnswer,
+  checked,
+}: {
+  step: Extract<Step, { kind: 'numeric' }>
+  answer: Answer
+  setAnswer: (a: Answer) => void
+  checked: boolean
+}) {
+  const correct = checked && gradeStep(step, answer)
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-muted mb-2">Compute</div>
+      <div className="mb-3">
+        <Markdown>{step.prompt}</Markdown>
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          type="number"
+          disabled={checked}
+          value={answer as string}
+          onChange={(e) => setAnswer(e.target.value)}
+          placeholder="Your number"
+          className="w-40 bg-panel2 border border-line rounded-lg px-3 py-2 font-mono text-sm"
+        />
+        {step.unit && <span className="text-sm text-muted">{step.unit}</span>}
+      </div>
+      {checked && (
+        <Verdict correct={!!correct}>
+          {!correct && (
+            <div className="mb-1">
+              <span className="text-accent font-medium">Answer: </span>
+              {step.answer}
+              {step.unit ? ` ${step.unit}` : ''}
+            </div>
+          )}
+          <Markdown>{step.explain}</Markdown>
+        </Verdict>
+      )}
+    </div>
+  )
+}
+
+export function RankCard({
+  step,
+  answer,
+  setAnswer,
+  checked,
+}: {
+  step: Extract<Step, { kind: 'rank' }>
+  answer: Answer
+  setAnswer: (a: Answer) => void
+  checked: boolean
+}) {
+  const order = (answer as number[]) ?? []
+  const correct = checked && gradeStep(step, answer)
+  const move = (pos: number, dir: -1 | 1) => {
+    const next = [...order]
+    const to = pos + dir
+    if (to < 0 || to >= next.length) return
+    ;[next[pos], next[to]] = [next[to], next[pos]]
+    setAnswer(next)
+  }
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-muted mb-2">Put in order</div>
+      <div className="mb-3">
+        <Markdown>{step.prompt}</Markdown>
+      </div>
+      <div className="space-y-2">
+        {order.map((itemId, pos) => {
+          const placed = checked && step.items[itemId].correctIndex === pos
+          return (
+            <div
+              key={itemId}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${
+                checked ? (placed ? 'border-accent/50 bg-accent/5' : 'border-warn/50 bg-warn/5') : 'border-line bg-panel'
+              }`}
+            >
+              <span className="font-mono text-xs text-muted w-5">{pos + 1}</span>
+              <span className="flex-1 text-sm">{step.items[itemId].text}</span>
+              {!checked && (
+                <div className="flex flex-col">
+                  <button onClick={() => move(pos, -1)} className="text-muted hover:text-fg leading-none" aria-label="up">▲</button>
+                  <button onClick={() => move(pos, 1)} className="text-muted hover:text-fg leading-none" aria-label="down">▼</button>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+      {checked && (
+        <Verdict correct={!!correct}>
+          {!correct && (
+            <div className="mb-1 text-sm">
+              <span className="text-accent font-medium">Correct order: </span>
+              {[...step.items].sort((a, b) => a.correctIndex - b.correctIndex).map((it) => it.text).join(' → ')}
+            </div>
+          )}
+          <Markdown>{step.explain}</Markdown>
+        </Verdict>
+      )}
+    </div>
+  )
+}
+
+export function CategorizeCard({
+  step,
+  answer,
+  setAnswer,
+  checked,
+}: {
+  step: Extract<Step, { kind: 'categorize' }>
+  answer: Answer
+  setAnswer: (a: Answer) => void
+  checked: boolean
+}) {
+  const map = (answer as Record<number, string>) ?? {}
+  const correct = checked && gradeStep(step, answer)
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-muted mb-2">Categorize</div>
+      <div className="mb-3">
+        <Markdown>{step.prompt}</Markdown>
+      </div>
+      <div className="space-y-2">
+        {step.items.map((it, i) => {
+          const ok = checked && map[i] === it.bucket
+          return (
+            <div
+              key={i}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${
+                checked ? (ok ? 'border-accent/50 bg-accent/5' : 'border-warn/50 bg-warn/5') : 'border-line bg-panel'
+              }`}
+            >
+              <span className="flex-1 text-sm">{it.text}</span>
+              <select
+                disabled={checked}
+                value={map[i] ?? ''}
+                onChange={(e) => setAnswer({ ...map, [i]: e.target.value })}
+                className="bg-panel2 border border-line rounded-lg px-2 py-1 text-sm"
+              >
+                <option value="">—</option>
+                {step.buckets.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )
+        })}
+      </div>
+      {checked && (
+        <Verdict correct={!!correct}>
+          {!correct && (
+            <div className="mb-1 text-sm">
+              {step.items.map((it, i) => (
+                <div key={i}>
+                  <span className="text-muted">{it.text}: </span>
+                  <span className="text-accent">{it.bucket}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <Markdown>{step.explain}</Markdown>
+        </Verdict>
+      )}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Season 2 real-world formats (self-contained; write the venture workspace)
+// ---------------------------------------------------------------------------
+
+export function ResourceCard({ step }: { step: Extract<Step, { kind: 'resource' }> }) {
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-accent mb-2">Real sources</div>
+      <h2 className="text-lg font-bold mb-3">{step.title}</h2>
+      <div className="space-y-2">
+        {step.items.map((it, i) => (
+          <a
+            key={i}
+            href={it.url}
+            target="_blank"
+            rel="noreferrer"
+            className="block rounded-xl border border-line bg-panel px-3 py-2 hover:border-accent/50"
+          >
+            <div className="text-sm text-accent underline break-all">{it.label} ↗</div>
+            {it.note && <div className="text-xs text-muted mt-0.5">{it.note}</div>}
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function PlatformTaskCard({ step }: { step: Extract<Step, { kind: 'platformTask' }> }) {
+  const startup = useStartup((s) => s.startup)
+  const completeTask = useStartup((s) => s.completeTask)
+  const setMilestone = useStartup((s) => s.setMilestone)
+  const existing = startup?.realProject.tasks[step.taskKey]
+  const [proof, setProof] = useState(existing?.proof ?? '')
+  const done = existing?.done ?? false
+
+  const save = async () => {
+    await completeTask(step.taskKey, { done: true, proof, label: step.title })
+    if (step.milestone) await setMilestone(step.taskKey, { done: true, label: step.title })
+  }
+
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-accent mb-2">🛠 Do it for real</div>
+      <h2 className="text-lg font-bold mb-2">{step.title}</h2>
+      <div className="mb-3">
+        <Markdown>{step.body}</Markdown>
+      </div>
+      {step.links.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {step.links.map((l, i) => (
+            <a key={i} href={l.url} target="_blank" rel="noreferrer" className="text-sm border border-line rounded-lg px-3 py-1.5 hover:bg-panel2 text-accent">
+              {l.label} ↗
+            </a>
+          ))}
+        </div>
+      )}
+      {step.steps && step.steps.length > 0 && (
+        <ol className="list-decimal pl-5 text-sm text-muted space-y-1 mb-3">
+          {step.steps.map((s, i) => (
+            <li key={i}>{s}</li>
+          ))}
+        </ol>
+      )}
+      <label className="block">
+        <span className="text-sm font-medium">{step.proofLabel}</span>
+        <input
+          type={step.proofKind === 'number' ? 'number' : step.proofKind === 'url' ? 'url' : 'text'}
+          value={proof}
+          onChange={(e) => setProof(e.target.value)}
+          placeholder={step.proofKind === 'url' ? 'https://…' : 'Your proof'}
+          className="w-full mt-1 bg-panel2 border border-line rounded-lg px-3 py-2 text-sm"
+        />
+      </label>
+      <button onClick={save} className="mt-3 bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:brightness-110">
+        {done ? '✓ Logged to my venture' : 'Mark done & log proof'}
+      </button>
+      <p className="text-[11px] text-muted mt-2">This is optional and never blocks the lesson — but doing it for real is the whole point.</p>
+    </div>
+  )
+}
+
+export function DocumentCard({ step }: { step: Extract<Step, { kind: 'document' }> }) {
+  const startup = useStartup((s) => s.startup)
+  const saveDoc = useStartup((s) => s.saveDocumentStatus)
+  const existing = startup?.realProject.documents[step.docKey]
+  const [link, setLink] = useState(existing?.link ?? '')
+  const status = existing?.status ?? 'todo'
+
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-accent mb-2">📄 Real document</div>
+      <h2 className="text-lg font-bold mb-2">{step.title}</h2>
+      <div className="mb-3">
+        <Markdown>{step.body}</Markdown>
+      </div>
+      <a href={step.templateHref} download className="inline-block text-sm bg-panel2 border border-line rounded-lg px-3 py-2 hover:border-accent/50 text-accent">
+        ⬇ Download template — {step.docLabel}
+      </a>
+      <p className="text-[11px] text-muted mt-2">Educational template — not legal, tax, or financial advice. Adapt it and have a professional review anything binding.</p>
+      <label className="block mt-3">
+        <span className="text-sm font-medium">Link to your filled copy (optional)</span>
+        <input
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="https://… (Google Doc, Notion, etc.)"
+          className="w-full mt-1 bg-panel2 border border-line rounded-lg px-3 py-2 text-sm"
+        />
+      </label>
+      <div className="flex gap-2 mt-3">
+        <button onClick={() => saveDoc(step.docKey, { status: 'in-progress', link, label: step.docLabel })} className="text-sm border border-line rounded-lg px-3 py-1.5 hover:bg-panel2">
+          {status === 'in-progress' ? '● In progress' : 'Mark in progress'}
+        </button>
+        <button onClick={() => saveDoc(step.docKey, { status: 'done', link, label: step.docLabel })} className="text-sm bg-accent text-ink font-semibold rounded-lg px-3 py-1.5">
+          {status === 'done' ? '✓ Done' : 'Mark done'}
+        </button>
+      </div>
     </div>
   )
 }

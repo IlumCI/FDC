@@ -60,6 +60,42 @@ export interface FormField {
   help?: string
 }
 
+// --- Season 2: richer, harder, more diverse interactive blocks ---
+// Authored on a lesson's optional `blocks` array; the player flattens them into
+// cards after the artifact and before the quiz. Graded blocks (numeric, rank,
+// categorize, and each scenario decision) join hearts/retry like MCQs.
+export type LessonBlock =
+  | { kind: 'numeric'; prompt: string; answer: number; tolerance?: number; unit?: string; explain: string }
+  // `items` are given in the CORRECT order; the player scrambles them to solve.
+  | { kind: 'rank'; prompt: string; items: string[]; explain: string }
+  | {
+      kind: 'categorize'
+      prompt: string
+      buckets: string[]
+      items: { text: string; bucket: string }[]
+      explain: string
+    }
+  | {
+      kind: 'scenario'
+      title: string
+      intro: string
+      decisions: { situation: string; options: { label: string; correct?: boolean; outcome: string }[] }[]
+    }
+  // Real-world hands-on task (writes the venture workspace, not graded).
+  | {
+      kind: 'platformTask'
+      title: string
+      body: string
+      links: { label: string; url: string }[]
+      steps?: string[]
+      taskKey: string
+      proofLabel: string
+      proofKind: 'url' | 'text' | 'number'
+      milestone?: boolean
+    }
+  | { kind: 'resource'; title: string; items: { label: string; url: string; note?: string }[] }
+  | { kind: 'document'; title: string; body: string; templateHref: string; docKey: string; docLabel: string }
+
 export interface Lesson {
   id: string // e.g. "5.1"
   module: number
@@ -75,6 +111,8 @@ export interface Lesson {
   branch?: Branch
   /** For `form`, provide `fields`; for `unit-economics`, omit them. */
   artifact?: { componentKey: ArtifactKey; prompt: string; fields?: FormField[] }
+  /** Season 2: extra interactive blocks inserted before the quiz. */
+  blocks?: LessonBlock[]
   tutorHooks: TutorHook[]
   quiz: QuizQuestion[]
   commitSummary: string
@@ -85,4 +123,6 @@ export interface Module {
   title: string
   goal: string
   lessons: Lesson[]
+  /** 1 = Foundations (simulated), 2 = Building for Real. Defaults to 1. */
+  season?: 1 | 2
 }
