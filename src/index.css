@@ -1,0 +1,97 @@
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+/* Player / celebration animations */
+@keyframes pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-ink text-fg;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prose defaults for rendered lesson markdown */
+.prose-fdc {
+  @apply text-fg leading-relaxed;
+}
+.prose-fdc h1,
+.prose-fdc h2,
+.prose-fdc h3 {
+  @apply font-semibold text-fg mt-4 mb-2;
+}
+.prose-fdc h2 {
+  @apply text-lg;
+}
+.prose-fdc h3 {
+  @apply text-base;
+}
+.prose-fdc p {
+  @apply my-2;
+}
+.prose-fdc ul {
+  @apply list-disc pl-5 my-2 space-y-1;
+}
+.prose-fdc ol {
+  @apply list-decimal pl-5 my-2 space-y-1;
+}
+.prose-fdc code {
+  @apply font-mono text-accent bg-panel2 px-1 py-0.5 rounded text-[0.9em];
+}
+.prose-fdc strong {
+  @apply text-fg font-semibold;
+}
+.prose-fdc a {
+  @apply text-accent underline;
+}
+.prose-fdc blockquote {
+  @apply border-l-2 border-accent/50 pl-3 text-muted italic my-3;
+}
+.prose-fdc table {
+  @apply w-full text-sm my-3 border-collapse;
+}
+.prose-fdc th,
+.prose-fdc td {
+  @apply border border-line px-2 py-1 text-left;
+}
+
+/* KaTeX should inherit our light-on-dark color */
+.katex {
+  color: inherit;
+}
