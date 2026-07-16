@@ -37,6 +37,14 @@ interface StartupState {
   ) => Promise<void>
   markLessonComplete: (lessonId: string) => Promise<void>
   setQuizResult: (lessonId: string, score: number) => Promise<void>
+  /** Merge structured fields into a slot (used by the reusable form artifact).
+   * Merges rather than replaces so two modules writing the same slot (e.g. M1
+   * and M3 both write `market`) accumulate instead of clobbering. */
+  saveFields: (
+    slot: WritableSlot,
+    fields: Record<string, unknown>,
+    meta: { lesson: string; summary: string }
+  ) => Promise<void>
   /** Finalize a played lesson: award XP, update streak & achievements, and
    * persist the carry-over review queue. Returns what to celebrate. */
   finishLesson: (r: FinishLessonInput) => Promise<FinishLessonResult>
@@ -107,6 +115,20 @@ export const useStartup = create<StartupState>((set, get) => ({
     if (!cur) return
     const next: Startup = structuredClone(cur)
     next.meta.quizResults = { ...next.meta.quizResults, [lessonId]: score }
+    await persist(next)
+    set({ startup: next })
+  },
+
+  async saveFields(slot, fields, meta) {
+    const cur = get().startup
+    if (!cur) return
+    const next: Startup = structuredClone(cur)
+    const existing = (next[slot] as Record<string, unknown>) ?? {}
+    next[slot] = { ...existing, ...fields, _savedAt: Date.now() } as never
+    next.meta.history = [
+      ...next.meta.history,
+      { ts: Date.now(), lesson: meta.lesson, slot, summary: meta.summary },
+    ].slice(-500)
     await persist(next)
     set({ startup: next })
   },

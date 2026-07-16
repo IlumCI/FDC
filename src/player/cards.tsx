@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Markdown } from '../lesson/Markdown'
-import { ARTIFACTS } from '../lesson/artifacts/registry'
+import { UnitEconomicsArtifact } from '../lesson/artifacts/UnitEconomicsArtifact'
 import { gradeFreeResponse, hasKey } from '../ai/client'
-import { useStartup } from '../store/useStartup'
+import { useStartup, type WritableSlot } from '../store/useStartup'
+import type { FormField } from '../lesson/types'
 import type { Step } from './steps'
 
 // Presentational single-focus cards. The player owns navigation and the
@@ -113,14 +114,102 @@ export function ChoiceCard({
 }
 
 export function ArtifactCard({ step, lessonId }: { step: Extract<Step, { kind: 'artifact' }>; lessonId: string }) {
-  const Artifact = ARTIFACTS[step.componentKey]
   return (
     <div>
       <div className="text-xs font-mono uppercase tracking-wide text-accent mb-2">Build your artifact</div>
       <div className="mb-4">
         <Markdown>{step.prompt}</Markdown>
       </div>
-      <Artifact lessonId={lessonId} />
+      {step.componentKey === 'unit-economics' ? (
+        <UnitEconomicsArtifact lessonId={lessonId} />
+      ) : (
+        <FormArtifact lessonId={lessonId} slot={step.slot} fields={step.fields ?? []} />
+      )}
+    </div>
+  )
+}
+
+// Reusable structured-field artifact. Every module except M5 uses this to write
+// its startup.json slot: typed inputs (not a blank box), merged into the slot on
+// save so later modules can read it.
+function FormArtifact({
+  lessonId,
+  slot,
+  fields,
+}: {
+  lessonId: string
+  slot: WritableSlot | null
+  fields: FormField[]
+}) {
+  const startup = useStartup((s) => s.startup)
+  const saveFields = useStartup((s) => s.saveFields)
+  const current = (slot ? (startup?.[slot] as Record<string, unknown>) : undefined) ?? {}
+  const [vals, setVals] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {}
+    for (const f of fields) init[f.key] = current[f.key] != null ? String(current[f.key]) : ''
+    return init
+  })
+  const [saved, setSaved] = useState(false)
+
+  if (!slot) return null
+
+  const set = (k: string, v: string) => {
+    setVals((p) => ({ ...p, [k]: v }))
+    setSaved(false)
+  }
+
+  const save = async () => {
+    const out: Record<string, unknown> = {}
+    for (const f of fields) {
+      const raw = vals[f.key] ?? ''
+      out[f.key] = f.type === 'number' ? Number(raw) || 0 : raw
+    }
+    const filled = fields.filter((f) => (vals[f.key] ?? '').toString().trim()).length
+    await saveFields(slot, out, { lesson: lessonId, summary: `${slot}: ${filled}/${fields.length} fields` })
+    setSaved(true)
+  }
+
+  return (
+    <div className="space-y-3">
+      {fields.map((f) => (
+        <label key={f.key} className="block">
+          <span className="text-sm font-medium">{f.label}</span>
+          {f.help && <span className="block text-xs text-muted mb-1">{f.help}</span>}
+          {f.type === 'textarea' ? (
+            <textarea
+              value={vals[f.key] ?? ''}
+              onChange={(e) => set(f.key, e.target.value)}
+              rows={3}
+              placeholder={f.placeholder}
+              className="w-full mt-1 bg-panel2 border border-line rounded-lg px-3 py-2 text-sm"
+            />
+          ) : f.type === 'select' ? (
+            <select
+              value={vals[f.key] ?? ''}
+              onChange={(e) => set(f.key, e.target.value)}
+              className="w-full mt-1 bg-panel2 border border-line rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="">—</option>
+              {(f.options ?? []).map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type={f.type === 'number' ? 'number' : 'text'}
+              value={vals[f.key] ?? ''}
+              onChange={(e) => set(f.key, e.target.value)}
+              placeholder={f.placeholder}
+              className="w-full mt-1 bg-panel2 border border-line rounded-lg px-3 py-2 text-sm font-mono"
+            />
+          )}
+        </label>
+      ))}
+      <button onClick={save} className="bg-accent text-ink font-semibold px-4 py-2 rounded-lg hover:brightness-110">
+        {saved ? '✓ Saved to my company' : 'Save to startup.json'}
+      </button>
     </div>
   )
 }

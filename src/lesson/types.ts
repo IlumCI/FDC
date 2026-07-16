@@ -45,8 +45,20 @@ export type TutorHook =
   | { label: string; kind: 'harder'; concept: string }
   | { label: string; kind: 'critique' }
 
-/** Key into the artifact-component registry (see lesson/artifacts). */
-export type ArtifactKey = 'unit-economics'
+/** Which interactive artifact a lesson renders. `unit-economics` is the bespoke
+ * M5 calculator; `form` is the reusable structured-field artifact every other
+ * module uses to write its slot. */
+export type ArtifactKey = 'unit-economics' | 'form'
+
+/** A single input in the reusable `form` artifact. */
+export interface FormField {
+  key: string
+  label: string
+  type: 'text' | 'textarea' | 'number' | 'select'
+  options?: string[] // for type 'select'
+  placeholder?: string
+  help?: string
+}
 
 export interface Lesson {
   id: string // e.g. "5.1"
@@ -61,7 +73,8 @@ export interface Lesson {
   reframe: Reframe
   workedExample: string // markdown
   branch?: Branch
-  artifact?: { componentKey: ArtifactKey; prompt: string }
+  /** For `form`, provide `fields`; for `unit-economics`, omit them. */
+  artifact?: { componentKey: ArtifactKey; prompt: string; fields?: FormField[] }
   tutorHooks: TutorHook[]
   quiz: QuizQuestion[]
   commitSummary: string

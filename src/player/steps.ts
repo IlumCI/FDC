@@ -1,4 +1,5 @@
-import type { Lesson, ArtifactKey } from '../lesson/types'
+import type { Lesson, ArtifactKey, FormField } from '../lesson/types'
+import type { WritableSlot } from '../store/useStartup'
 
 // A lesson's 8 slots, flattened into an ordered list of single-focus CARDS for
 // the full-screen player. Graded cards (kind 'choice') carry STABLE ids so the
@@ -14,7 +15,14 @@ export type Step =
   | { kind: 'info'; id: string; eyebrow?: string; title: string; body: string }
   | { kind: 'reframe'; id: string; analogy: string; breaks: string }
   | { kind: 'choice'; id: string; prompt: string; options: ChoiceOption[]; instructive: boolean }
-  | { kind: 'artifact'; id: string; prompt: string; componentKey: ArtifactKey }
+  | {
+      kind: 'artifact'
+      id: string
+      prompt: string
+      componentKey: ArtifactKey
+      slot: WritableSlot | null
+      fields?: FormField[]
+    }
   | { kind: 'free'; id: string; prompt: string; rubric: string }
   | { kind: 'divider'; id: string; emoji: string; title: string; body: string }
 
@@ -37,7 +45,14 @@ export function buildSteps(l: Lesson): Step[] {
       options: l.branch.choices.map((c) => ({ label: c.label, correct: !!c.correct, explain: c.consequence })),
     })
   if (l.artifact)
-    steps.push({ kind: 'artifact', id: `${l.id}#artifact`, prompt: l.artifact.prompt, componentKey: l.artifact.componentKey })
+    steps.push({
+      kind: 'artifact',
+      id: `${l.id}#artifact`,
+      prompt: l.artifact.prompt,
+      componentKey: l.artifact.componentKey,
+      slot: l.artifactSlot,
+      fields: l.artifact.fields,
+    })
   l.quiz.forEach((q, i) => {
     if (q.kind === 'mcq')
       steps.push({

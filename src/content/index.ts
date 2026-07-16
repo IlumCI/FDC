@@ -1,10 +1,35 @@
 import type { Module, Lesson } from '../lesson/types'
+import { module0 } from './module-00'
+import { module1 } from './module-01'
+import { module2 } from './module-02'
+import { module3 } from './module-03'
+import { module4 } from './module-04'
 import { module5 } from './module-05'
+import { module6 } from './module-06'
+import { module7 } from './module-07'
+import { module8 } from './module-08'
+import { module9 } from './module-09'
+import { module10 } from './module-10'
+import { module11 } from './module-11'
+import { module12 } from './module-12'
 
-// The full course. Only Module 5 is authored deep for the first build; the
-// remaining modules are listed in the roadmap (see course.ts) but not yet
-// authored. Adding a module = author its content object and register it here.
-export const MODULES: Module[] = [module5]
+// The full course, in dependency order (M0 → M12). Adding a module = author its
+// content object under src/content/ and register it here.
+export const MODULES: Module[] = [
+  module0,
+  module1,
+  module2,
+  module3,
+  module4,
+  module5,
+  module6,
+  module7,
+  module8,
+  module9,
+  module10,
+  module11,
+  module12,
+]
 
 export function getModule(id: number): Module | undefined {
   return MODULES.find((m) => m.id === id)
