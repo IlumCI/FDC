@@ -13,11 +13,28 @@ import { module10 } from './module-10'
 import { module11 } from './module-11'
 import { module12 } from './module-12'
 import { module13 } from './module-13'
+import { module14 } from './module-14'
+import { module15 } from './module-15'
+import { module16 } from './module-16'
+import { module17 } from './module-17'
+import { module18 } from './module-18'
 import { module19 } from './module-19'
 import { module20 } from './module-20'
+import { module21 } from './module-21'
+import { module22 } from './module-22'
+import { module23 } from './module-23'
+import { module24 } from './module-24'
+import { module25 } from './module-25'
+import { module26 } from './module-26'
+import { module27 } from './module-27'
+import { module28 } from './module-28'
+import { module29 } from './module-29'
+import { module30 } from './module-30'
 
-// The full course, in dependency order (M0 → M12). Adding a module = author its
-// content object under src/content/ and register it here.
+// The full course. Season 1 (Foundations, M0-M12) builds a simulated company;
+// Season 2 (Building for Real, M13-M30) guides the learner's actual startup.
+// Adding a module = author its content object under src/content/ and register
+// it here in dependency order.
 export const MODULES: Module[] = [
   module0,
   module1,
@@ -32,10 +49,25 @@ export const MODULES: Module[] = [
   module10,
   module11,
   module12,
-  // Season 2 — "Building for Real" (flagship slice; more modules to follow)
+  // Season 2 — "Building for Real"
   module13,
+  module14,
+  module15,
+  module16,
+  module17,
+  module18,
   module19,
   module20,
+  module21,
+  module22,
+  module23,
+  module24,
+  module25,
+  module26,
+  module27,
+  module28,
+  module29,
+  module30,
 ]
 
 export function moduleSeason(m: Module): number {
