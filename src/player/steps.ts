@@ -80,7 +80,10 @@ export function isAnswerReady(s: Step, a: Answer): boolean {
   if (s.kind === 'choice') return a != null
   if (s.kind === 'numeric') return typeof a === 'string' && a.trim() !== '' && !Number.isNaN(Number(a))
   if (s.kind === 'rank') return Array.isArray(a) && a.length === s.items.length
-  if (s.kind === 'categorize') return s.items.every((_, i) => !!(a as Record<number, string>)[i])
+  if (s.kind === 'categorize') {
+    const map = a as Record<number, string>
+    return !!map && typeof map === 'object' && s.items.every((_, i) => !!map[i])
+  }
   return true
 }
 
@@ -88,13 +91,14 @@ export function gradeStep(s: Step, a: Answer): boolean {
   if (s.kind === 'choice') return typeof a === 'number' && !!s.options[a]?.correct
   if (s.kind === 'numeric') return Math.abs(Number(a) - s.answer) <= s.tolerance
   if (s.kind === 'rank') {
-    const order = a as number[]
+    if (!Array.isArray(a)) return false
     // items[i].correctIndex gives the item's target position; correct when the
     // learner's order places each item at its target.
-    return order.every((itemId, pos) => s.items[itemId].correctIndex === pos)
+    return (a as number[]).every((itemId, pos) => s.items[itemId]?.correctIndex === pos)
   }
   if (s.kind === 'categorize') {
     const map = a as Record<number, string>
+    if (!map || typeof map !== 'object') return false
     return s.items.every((it, i) => map[i] === it.bucket)
   }
   return false

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Lesson } from '../lesson/types'
 import {
@@ -89,17 +89,22 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const [result, setResult] = useState<FinishLessonResult | null>(null)
   const [showTutor, setShowTutor] = useState(false)
 
-  // Per-card interaction state, reset when the card changes. `answer` is the
-  // kind-specific value (index / number string / order / bucket map).
+  // Per-card interaction state. `answer` is the kind-specific value
+  // (index / number string / order / bucket map).
   const [answer, setAnswer] = useState<CardAnswer>(() => initialAnswer(queue[0]))
   const [checked, setChecked] = useState(false)
-  useEffect(() => {
-    setAnswer(initialAnswer(queue[index]))
-    setChecked(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index])
+  const [renderedId, setRenderedId] = useState(queue[0].id)
 
   const step = queue[index]
+  // Reset per-card state SYNCHRONOUSLY when the card changes, before children
+  // render — otherwise a card briefly receives the previous card's answer of a
+  // different shape and crashes (e.g. a rank card handed a number). This is the
+  // React "adjust state during render" pattern; it re-renders before commit.
+  if (step.id !== renderedId) {
+    setRenderedId(step.id)
+    setAnswer(initialAnswer(step))
+    setChecked(false)
+  }
   const graded = isGraded(step)
 
   const onCheck = () => {

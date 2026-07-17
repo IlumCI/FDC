@@ -12,6 +12,9 @@ import { module9 } from './module-09'
 import { module10 } from './module-10'
 import { module11 } from './module-11'
 import { module12 } from './module-12'
+import { module13 } from './module-13'
+import { module19 } from './module-19'
+import { module20 } from './module-20'
 
 // The full course, in dependency order (M0 → M12). Adding a module = author its
 // content object under src/content/ and register it here.
@@ -29,6 +32,10 @@ export const MODULES: Module[] = [
   module10,
   module11,
   module12,
+  // Season 2 — "Building for Real" (flagship slice; more modules to follow)
+  module13,
+  module19,
+  module20,
 ]
 
 export function moduleSeason(m: Module): number {
