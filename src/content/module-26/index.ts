@@ -35,7 +35,9 @@ export const module26: Module = {
 
 Incorporating is the act that turns "you, personally, doing risky things" into "a company doing them." Two benefits are the whole point. First, **limited liability**: a properly run entity is a legal person, so most business debts and lawsuits stop at the company instead of reaching your house and savings. Second, **ownership you can transfer**: an entity can issue shares, take investment, grant employee equity, and one day be acquired — none of which a sole individual can do cleanly.
 
-The two questions you must actually answer are **which entity** and **where**. In common startup terms this is usually a choice between a **pass-through** form (an LLC or its local equivalent — flexible, simple, taxed once at the owner level) and a **corporation** (a C-corp or equivalent — the form institutional investors expect, able to issue stock options and reinvest profits, but with more formalities). "Where" matters because you register under a specific jurisdiction's law; many US startups pick Delaware for reasons of familiar case law and investor expectations, but that is a convention, not a rule, and it can be the *wrong* answer for a bootstrapped local business.
+**The first decision is *when* — and for most people, early on, the honest answer is "not yet."** Incorporating is not step one of having an idea; it is what you do when a concrete **trigger** appears: you have paying customers or are about to sign a real contract, you are taking outside investment, you are bringing on a co-founder or first hire (so equity, IP, and vesting are set cleanly from day one), or you have genuine liability exposure (handling sensitive user data, shipping a physical product, anything regulated). Absent a trigger — a solo founder still validating an unproven idea — incorporating early usually just **starts the meter**: a formation fee, an annual registered agent, annual/franchise filings, and a separate tax return, all spent on something that may never work. Depending on your jurisdiction you can often validate demand, talk to customers, and even take a little early money as a sole proprietor *first*, then formalize the moment a trigger fires. Don't incorporate to feel official; incorporate because something real requires it.
+
+Once a trigger makes it time, two more questions remain: **which entity** and **where**. In common startup terms this is usually a choice between a **pass-through** form (an LLC or its local equivalent — flexible, simple, taxed once at the owner level) and a **corporation** (a C-corp or equivalent — the form institutional investors expect, able to issue stock options and reinvest profits, but with more formalities). "Where" matters because you register under a specific jurisdiction's law; many US startups pick Delaware for reasons of familiar case law and investor expectations, but that is a convention, not a rule, and it can be the *wrong* answer for a bootstrapped local business.
 
 The real skill this lesson builds is **routing the decision**: a standard single-founder software company can often incorporate through a reputable *formation service* in an afternoon; a company with co-founders splitting equity, unusual tax situations, or a cross-border structure should pay a *lawyer* before filing, because unwinding a bad structure later is far more expensive than getting advice up front. Knowing which situation you're in is the judgment that saves you the most money.`,
       reframe: {
@@ -48,22 +50,22 @@ Why cite it? Because it makes the DIY-vs-service-vs-lawyer decision concrete. Fo
 
 The transferable lesson is the boundary, not the brand. A service is right when your situation is standard. The moment your situation is *not* standard — three founders arguing over a split, a spouse's business interest, non-US founders, IP currently owned by someone else, an unusual tax posture — the cheap flat fee stops being a bargain, because it will happily file a structure that's wrong for you. That is precisely when you spend a few hundred dollars on a lawyer *first*. Same task, different variance, different tool.`,
       branch: {
-        scenario: `You're a solo founder building a standard SaaS product. You have no co-founders yet, no revenue, and you might raise money in a year or two. You've been paralyzed for two weeks reading about Delaware vs. your home state, C-corp vs. LLC, and whether to hire a lawyer. What's the disciplined move?`,
+        scenario: `You're a solo founder building a standard SaaS product. You have no co-founders, **no revenue yet**, and no signed contracts — you're still validating whether anyone wants this. You might raise money in a year or two. You've spent two weeks reading about Delaware vs. your home state and C-corp vs. LLC. What's the disciplined move?`,
         choices: [
           {
-            label: 'Keep researching until you fully understand every tax nuance and can defend the "perfect" structure before you file anything.',
-            correct: false,
-            consequence: `**Analysis paralysis on a standard case.** Your situation is the textbook low-variance one — single founder, plain software, standard equity. The marginal tax nuance you're agonizing over rarely changes the right answer for a pre-revenue solo SaaS, and the weeks lost are real. Structure can be adjusted later with counsel if your situation changes; indefinite research is just fear wearing a lab coat.`,
-          },
-          {
-            label: 'Use a reputable formation service to incorporate the standard entity now, get your tax ID and equity done correctly, and keep a lawyer\'s number for when your situation becomes non-standard.',
+            label: `Hold off on incorporating for now — keep validating and talking to customers. Decide your likely entity and route so you can move fast, and incorporate the moment a real trigger appears (a paying customer or contract, a co-founder, outside investment, or genuine liability).`,
             correct: true,
-            consequence: `**Correct.** This is routing by variance. A single-founder standard software company is exactly the high-volume, low-variance task a service does well and cheaply — including the easy-to-miss pieces (tax ID, equity issuance, election deadlines). You get a clean, investor-legible entity in an afternoon and reserve lawyer spend for the moment it earns its cost: co-founders, unusual tax facts, or a financing.`,
+            consequence: `**Correct.** With no revenue, no co-founder, and no contracts, there is no trigger yet — so incorporating now mostly starts the meter (formation fee, annual registered agent, filings, a separate tax return) on an idea that may not pan out. Do the cheap, reversible thing: keep validating, and pre-decide your entity and route so that when a trigger *does* fire — your first paying customer, a co-founder, or a term sheet — you incorporate in an afternoon. Depending on your jurisdiction you can often take a little early money as a sole proprietor before then. (Educational, not legal advice — confirm what your jurisdiction allows.)`,
           },
           {
-            label: 'Hire a top startup law firm at premium hourly rates to handle the entire formation from scratch, to be safe.',
+            label: `Incorporate a standard entity now through a formation service so you're "official" before you build.`,
             correct: false,
-            consequence: `**Over-buying for a standard task.** Paying premium hourly rates to hand-form a vanilla single-founder entity is spending a specialist's time on a solved, commoditized problem. Save the lawyer for genuinely non-standard decisions (equity splits, cross-border structure, financings) where their judgment actually changes the outcome. Here it mostly buys you a bigger invoice for the same certificate.`,
+            consequence: `**Usually premature here.** It isn't catastrophic, but for a pre-revenue solo founder still validating, "being official" buys little and starts real recurring costs and filing obligations on something unproven. Incorporation isn't a milestone you unlock by starting — it's a response to a concrete trigger (revenue/contract, co-founder, investment, or liability). Spend the two weeks getting a paying customer, not a certificate.`,
+          },
+          {
+            label: `Keep researching Delaware-vs-home-state and C-corp-vs-LLC until you can defend the "perfect" structure before doing anything else.`,
+            correct: false,
+            consequence: `**Fear wearing a lab coat.** Two things are true at once: you don't need to incorporate yet, *and* even when you do, a standard solo software case rarely turns on the tax nuance you're agonizing over — a service handles it, or a lawyer if your facts are non-standard. Either way, more research isn't the constraint; validation is. Go get signal.`,
           },
         ],
       },
@@ -107,11 +109,19 @@ The transferable lesson is the boundary, not the brand. A service is right when 
         },
         {
           kind: 'scenario',
-          title: 'Service, lawyer, or DIY?',
-          intro: 'Routing the incorporation decision by variance. For each situation, pick the tool that fits. (Educational, not legal advice.)',
+          title: 'When — then how?',
+          intro: 'First decide whether it is even time to incorporate; only then route the how. (Educational, not legal advice.)',
           decisions: [
             {
-              situation: 'You are a single founder forming a standard software company with plain-vanilla founder equity and no unusual tax facts. Which route?',
+              situation: 'You have an idea and some code, but no users, no revenue, no contracts, and no co-founder. Should you incorporate now?',
+              options: [
+                { label: 'Yes — incorporate immediately so it is done "properly" from day one', correct: false, outcome: 'Premature. With no trigger (revenue/contract, co-founder, investment, or liability), you are mostly starting recurring costs and filings on an unproven idea. Validate first; incorporate when something real requires it.' },
+                { label: 'Not yet — keep validating, and incorporate when a real trigger appears', correct: true, outcome: 'Correct. Incorporation responds to a trigger, not to enthusiasm. Pre-decide your likely entity and route so you can move in an afternoon when a trigger arrives.' },
+                { label: 'Never — an entity is pure overhead you should always avoid', correct: false, outcome: 'Wrong the other way. Once you have paying customers, a co-founder, investment, or real liability exposure, operating personally leaves your own assets on the line. The answer is "when a trigger fires," not "never."' },
+              ],
+            },
+            {
+              situation: 'A trigger has now fired and it is time to form the entity. You are a single founder with plain-vanilla founder equity and no unusual tax facts. Which route?',
               options: [
                 { label: 'File everything yourself from raw state forms to save the fee', correct: false, outcome: 'Possible, but risky for the pieces that are easy to botch — the tax ID, equity issuance, and time-sensitive elections. The savings are small; the failure modes (a blown election deadline) are expensive and sometimes irreversible.' },
                 { label: 'Use a reputable formation service', correct: true, outcome: 'Correct for the modal case. A standard single-founder software entity is exactly the high-volume, low-variance task a service does correctly and cheaply, including the easy-to-miss steps.' },
@@ -130,22 +140,23 @@ The transferable lesson is the boundary, not the brand. A service is right when 
         },
         {
           kind: 'platformTask',
-          title: 'Research real incorporation options for YOUR jurisdiction',
-          body: 'Do the real research for your actual situation. If you are US-based, compare doing it through a formation service (see Stripe Atlas) against your government\'s own guidance. If you are outside the US, find your country/region\'s official company registrar and its equivalent guidance — the concepts transfer, the specifics do not. Reminder: this is educational, not legal advice, and it is jurisdiction-dependent; if your situation is non-standard, note that you should consult a lawyer. Spend 30-45 minutes. Then record your provisional decision.',
+          title: 'Decide whether it is time — and if so, research options for YOUR jurisdiction',
+          body: 'First, be honest about timing: do you have a real trigger to incorporate yet — a paying customer or signed contract, a co-founder, outside investment, or genuine liability exposure? If not, "**not yet**" is a complete and correct answer here; just note the specific trigger you are waiting for. If you do have a trigger (or want to plan ahead so you can move fast), do the real research for your situation: if US-based, compare a formation service (see Stripe Atlas) against your government\'s own guidance; if outside the US, find your country/region\'s official company registrar and its equivalent guidance — the concepts transfer, the specifics do not. Educational, not legal advice, and jurisdiction-dependent; if your situation is non-standard, note that you should consult a lawyer. Spend 30-45 minutes, then record your provisional decision.',
           links: [
             { label: 'Stripe Atlas — incorporate a US entity (fees/details on the official site)', url: 'https://stripe.com/atlas' },
             { label: 'US SBA — Choose a business structure (official government resource)', url: 'https://www.sba.gov/business-guide/launch-your-business/choose-business-structure' },
             { label: 'US SBA — Register your business (state-level requirements)', url: 'https://www.sba.gov/business-guide/launch-your-business/register-your-business' },
           ],
           steps: [
-            'Identify the correct official registrar / government resource for YOUR jurisdiction (SBA + your state if US; your national company registrar otherwise).',
+            'First: do you have a real trigger yet (revenue/contract, co-founder, investment, or liability)? If not, your answer is "not yet" — name the trigger you are waiting for, and you are done.',
+            'If it IS time (or you are planning ahead): identify the correct official registrar / government resource for YOUR jurisdiction (SBA + your state if US; your national company registrar otherwise).',
             'Pick a provisional entity type (pass-through vs. corporation) based on whether you plan to raise and grant equity.',
             'Decide your route — DIY, a formation service, or a lawyer — using the variance test (standard case vs. non-standard).',
             'Note the concrete costs you found (filing fee, service fee, registered agent / annual filing) so the recurring cost is not a surprise.',
             'Record your provisional decision below. Flag explicitly if your situation is non-standard and needs a lawyer.',
           ],
           taskKey: '26.1#incorporate',
-          proofLabel: 'Your provisional choice: entity type + jurisdiction + route (DIY / service / lawyer), and why',
+          proofLabel: 'Either "not yet — the trigger I am waiting for is ___", OR: entity type + jurisdiction + route (DIY / service / lawyer) and why',
           proofKind: 'text',
           milestone: true,
         },
@@ -184,7 +195,7 @@ The transferable lesson is the boundary, not the brand. A service is right when 
           options: [
             'Retain a premium law firm to hand-form everything, to be safe',
             'Use a reputable formation service, and keep a lawyer in reserve for when your situation becomes non-standard',
-            'Never incorporate until you have revenue',
+            'Copy the exact entity and state a famous startup used, regardless of your own situation',
             'File nothing and operate personally to avoid all overhead',
           ],
           answer: 1,
@@ -196,7 +207,7 @@ The transferable lesson is the boundary, not the brand. A service is right when 
           rubric: 'Strong answer: (1) names a concrete entity + jurisdiction with a reason tied to their actual plans (raising & options -> corporation; bootstrapping/simple -> pass-through), not a memorized default; (2) picks a route and justifies it via variance (standard case -> service; non-standard facts -> lawyer) rather than fear or cost alone; (3) identifies a real open question for a professional and shows awareness that specifics are jurisdiction-dependent. Penalize confident claims stated as legal fact, and reward appropriate "consult a lawyer/accountant" framing.',
         },
       ],
-      commitSummary: 'your provisional incorporation decision (entity + jurisdiction + route) is captured in "My venture" — with the non-standard flags that tell you when to bring in a lawyer. Educational only; confirm specifics with a professional.',
+      commitSummary: 'your provisional incorporation call — including a legitimate "not yet, waiting for trigger X", or entity + jurisdiction + route — is captured in "My venture", with the non-standard flags that tell you when to bring in a lawyer. Educational only; confirm specifics with a professional.',
     },
 
     // -----------------------------------------------------------------------

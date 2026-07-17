@@ -85,13 +85,13 @@ Just like Raft or Paxos, what keeps you leader is not owning the most nodes in t
           items: [
             { text: 'An employee holding 0.3% in vested options, no board seat', bucket: 'Nominal selectorate' },
             { text: 'One of six angels holding ~1% each, no information rights', bucket: 'Nominal selectorate' },
-            { text: 'The seed fund partner who holds a board seat and a financing veto', bucket: 'Winning coalition' },
-            { text: 'The CEO/founder, a board member whose vote is needed for a majority', bucket: 'Winning coalition' },
+            { text: 'The seed fund partner who holds one of the three board seats', bucket: 'Winning coalition' },
+            { text: 'The CEO/founder, who holds one of the three board seats', bucket: 'Winning coalition' },
             { text: 'A respected senior investor with no seat but whose opinion sways the board', bucket: 'Real selectorate' },
             { text: 'The cofounder/CTO whose exit would collapse the product, holds a board seat', bucket: 'Winning coalition' },
             { text: 'A former advisor still on the cap table with 0.5%, now disengaged', bucket: 'Nominal selectorate' },
           ],
-          explain: 'Nominal = everyone with a formal but negligible say (small option/angel holders, a disengaged advisor). Real selectorate = people who genuinely shape outcomes even without a decisive vote (the influential seatless investor). Winning coalition = the minimal set whose combined support is *required* to control decisions — here the two founder/CTO board votes plus the investor whose seat and veto make him indispensable. Note the same person can move between layers as the rules change (a new financing, a lost board seat).',
+          explain: 'Nominal = everyone with a formal but negligible say (small option/angel holders, a disengaged advisor). Real selectorate = people who genuinely shape outcomes even without a vote (the influential seatless investor). Winning coalition = the essentials — here the three board members, because ordinary decisions pass on a 2-of-3 majority, so *any two of them* form a minimal winning coalition and no single one is individually decisive. (This is exactly the worked example: control is any two of the three seats.) The same person can move between layers as the rules change — a new financing, a lost board seat.',
         },
       ],
       tutorHooks: [
