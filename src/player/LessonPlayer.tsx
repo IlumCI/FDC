@@ -1,8 +1,30 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Lesson } from '../lesson/types'
-import { buildSteps, gradedStepsById, isGraded, type Step } from './steps'
-import { InfoCard, ReframeCard, ChoiceCard, ArtifactCard, FreeCard, DividerCard } from './cards'
+import {
+  buildSteps,
+  gradedStepsById,
+  isGraded,
+  initialAnswer,
+  isAnswerReady,
+  gradeStep,
+  type Step,
+  type Answer as CardAnswer,
+} from './steps'
+import {
+  InfoCard,
+  ReframeCard,
+  ChoiceCard,
+  ArtifactCard,
+  FreeCard,
+  DividerCard,
+  NumericCard,
+  RankCard,
+  CategorizeCard,
+  PlatformTaskCard,
+  ResourceCard,
+  DocumentCard,
+} from './cards'
 import { HUD } from './HUD'
 import { Celebration } from './Celebration'
 import { TutorDrawer } from './Tutor'
@@ -12,7 +34,7 @@ import { allLessons } from '../content'
 
 const START_HEARTS = 5
 
-interface Answer {
+interface AnswerRecord {
   firstCorrect: boolean // first-attempt correctness → drives XP
   latestCorrect: boolean // most recent attempt → drives unresolved/warm-up
 }
@@ -62,25 +84,32 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const [index, setIndex] = useState(0)
   const [hearts, setHearts] = useState(START_HEARTS)
   const [heartsLost, setHeartsLost] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, Answer>>({})
+  const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({})
   const [retryStarted, setRetryStarted] = useState(false)
   const [result, setResult] = useState<FinishLessonResult | null>(null)
   const [showTutor, setShowTutor] = useState(false)
 
-  // Per-card interaction state, reset when the card changes.
-  const [selected, setSelected] = useState<number | null>(null)
+  // Per-card interaction state. `answer` is the kind-specific value
+  // (index / number string / order / bucket map).
+  const [answer, setAnswer] = useState<CardAnswer>(() => initialAnswer(queue[0]))
   const [checked, setChecked] = useState(false)
-  useEffect(() => {
-    setSelected(null)
-    setChecked(false)
-  }, [index])
+  const [renderedId, setRenderedId] = useState(queue[0].id)
 
   const step = queue[index]
-  const isChoice = step.kind === 'choice'
+  // Reset per-card state SYNCHRONOUSLY when the card changes, before children
+  // render — otherwise a card briefly receives the previous card's answer of a
+  // different shape and crashes (e.g. a rank card handed a number). This is the
+  // React "adjust state during render" pattern; it re-renders before commit.
+  if (step.id !== renderedId) {
+    setRenderedId(step.id)
+    setAnswer(initialAnswer(step))
+    setChecked(false)
+  }
+  const graded = isGraded(step)
 
   const onCheck = () => {
-    if (step.kind !== 'choice' || selected == null) return
-    const correct = step.options[selected].correct
+    if (!isGraded(step) || !isAnswerReady(step, answer)) return
+    const correct = gradeStep(step, answer)
     const seen = answers[step.id]
     if (!correct && !seen) {
       setHearts((h) => Math.max(0, h - 1))
@@ -93,7 +122,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
     setChecked(true)
   }
 
-  const finalize = async (finalAnswers: Record<string, Answer>) => {
+  const finalize = async (finalAnswers: Record<string, AnswerRecord>) => {
     const correctCount = mainGradedIds.filter((id) => finalAnswers[id]?.firstCorrect).length
     const unresolved = mainGradedIds.filter((id) => finalAnswers[id] && !finalAnswers[id].latestCorrect)
     const warmup =
@@ -145,10 +174,11 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const atEnd = index >= queue.length - 1
   const pendingRetry = !retryStarted && mainGradedIds.some((id) => answers[id] && !answers[id].latestCorrect)
   const continueLabel = atEnd && !pendingRetry ? 'FINISH' : 'CONTINUE'
-  const primaryLabel = isChoice && !checked ? 'CHECK' : continueLabel
-  const primaryDisabled = isChoice && !checked && selected == null
-  const primaryAction = isChoice && !checked ? onCheck : advance
-  const progress = (index + (checked || !isChoice ? 1 : 0)) / queue.length
+  const needsCheck = graded && !checked
+  const primaryLabel = needsCheck ? 'CHECK' : continueLabel
+  const primaryDisabled = needsCheck && !isAnswerReady(step, answer)
+  const primaryAction = needsCheck ? onCheck : advance
+  const progress = (index + (checked || !graded ? 1 : 0)) / queue.length
 
   return (
     <div className="fixed inset-0 z-10 bg-ink flex flex-col">
@@ -166,8 +196,14 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
           {step.kind === 'reframe' && <ReframeCard step={step} />}
           {step.kind === 'divider' && <DividerCard step={step} />}
           {step.kind === 'choice' && (
-            <ChoiceCard step={step} selected={selected} checked={checked} onSelect={setSelected} />
+            <ChoiceCard step={step} selected={answer as number | null} checked={checked} onSelect={(i) => setAnswer(i)} />
           )}
+          {step.kind === 'numeric' && <NumericCard step={step} answer={answer} setAnswer={setAnswer} checked={checked} />}
+          {step.kind === 'rank' && <RankCard step={step} answer={answer} setAnswer={setAnswer} checked={checked} />}
+          {step.kind === 'categorize' && <CategorizeCard step={step} answer={answer} setAnswer={setAnswer} checked={checked} />}
+          {step.kind === 'platformTask' && <PlatformTaskCard step={step} />}
+          {step.kind === 'resource' && <ResourceCard step={step} />}
+          {step.kind === 'document' && <DocumentCard step={step} />}
           {step.kind === 'artifact' && <ArtifactCard step={step} lessonId={lesson.id} />}
           {step.kind === 'free' && <FreeCard step={step} />}
         </div>

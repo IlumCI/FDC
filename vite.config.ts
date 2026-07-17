@@ -33,7 +33,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2}'],
+        // Include md/csv so bundled document templates are available offline.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2,md,csv}'],
+        // The full 31-module curriculum makes the app bundle exceed the 2 MiB
+        // default; raise the cap so the whole course still precaches for offline.
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // The Anthropic API is never precached — AI is a live, opt-in call.
         navigateFallbackDenylist: [/^\/api/],
       },

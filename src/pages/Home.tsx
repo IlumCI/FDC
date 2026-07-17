@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { ROADMAP } from '../content/course'
-import { getModule } from '../content'
+import { SEASONS } from '../content/course'
+import { modulesBySeason } from '../content'
 import { useStartup } from '../store/useStartup'
 import { hasKey } from '../ai/client'
 import { levelFromXp, levelProgress } from '../game/achievements'
@@ -81,18 +82,57 @@ export function Home() {
   const navigate = useNavigate()
   const startup = useStartup((s) => s.startup)
   const completed = new Set(startup?.meta.completedLessons ?? [])
+  const [season, setSeason] = useState<1 | 2>(1)
+
+  const modules = modulesBySeason(season)
+  const seasonMeta = SEASONS.find((s) => s.id === season)!
 
   return (
     <div className="space-y-6 pb-10">
       <section>
         <h1 className="text-xl font-bold">Compile a company.</h1>
         <p className="text-muted text-sm mt-1">
-          Business &amp; economics for engineers. Each lesson writes one real artifact into your{' '}
-          <code className="text-accent">startup.json</code>.
+          Business &amp; economics for engineers — from your first principles to a real, running startup.
         </p>
       </section>
 
       <StatsBar />
+
+      {/* Season switcher */}
+      <div className="flex gap-2">
+        {SEASONS.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => setSeason(s.id)}
+            className={`flex-1 rounded-xl border px-3 py-2 text-left transition ${
+              season === s.id ? 'border-accent bg-accent/10' : 'border-line bg-panel hover:border-accent/40'
+            }`}
+          >
+            <div className={`text-sm font-semibold ${season === s.id ? 'text-accent' : 'text-fg'}`}>{s.title}</div>
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-muted -mt-3">{seasonMeta.subtitle}</p>
+
+      {season === 1 && (
+        <p className="text-xs text-muted -mt-3">
+          Builds a simulated company —{' '}
+          <Link to="/startup" className="text-accent underline">
+            view startup.json
+          </Link>
+          .
+        </p>
+      )}
+
+      {season === 2 && (
+        <div className="text-xs text-muted border border-dashed border-accent/40 rounded-lg p-3">
+          Season 2 tracks your <strong>real</strong> venture. Progress and deliverables live in{' '}
+          <Link to="/venture" className="text-accent underline">
+            My venture
+          </Link>
+          . (Educational content — not legal, tax, or financial advice.)
+        </div>
+      )}
 
       {!hasKey() && (
         <div className="text-xs text-muted border border-dashed border-line rounded-lg p-3">
@@ -104,18 +144,21 @@ export function Home() {
         </div>
       )}
 
-      {ROADMAP.map((m) => {
-        const mod = getModule(m.id)
-        const authored = m.status === 'authored' && mod
-        if (authored && mod) {
-          // Find the current node: first lesson not yet completed.
+      {modules.length === 0 ? (
+        <div className="text-center text-muted py-12 border border-dashed border-line rounded-xl">
+          <div className="text-3xl mb-2">🚧</div>
+          This season is being authored — check back soon.
+        </div>
+      ) : (
+        modules.map((mod) => {
           const currentIdx = mod.lessons.findIndex((l) => !completed.has(l.id))
           return (
-            <section key={m.id}>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="font-mono text-xs bg-accent text-ink rounded px-2 py-0.5">{String(m.id).padStart(2, '0')}</span>
-                <h2 className="font-semibold">{m.title}</h2>
+            <section key={mod.id}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-mono text-xs bg-accent text-ink rounded px-2 py-0.5">{String(mod.id).padStart(2, '0')}</span>
+                <h2 className="font-semibold">{mod.title}</h2>
               </div>
+              <p className="text-xs text-muted mb-4 ml-9">{mod.goal}</p>
               <div className="space-y-6 py-2">
                 {mod.lessons.map((l, i) => {
                   const done = completed.has(l.id)
@@ -133,21 +176,8 @@ export function Home() {
               </div>
             </section>
           )
-        }
-        // Planned (locked) module — a teaser row.
-        return (
-          <div key={m.id} className="flex items-center gap-3 rounded-xl border border-line/60 bg-panel/40 p-3 opacity-70">
-            <span className="w-10 h-10 rounded-full bg-panel2 border border-line flex items-center justify-center text-muted">🔒</span>
-            <div>
-              <div className="text-sm text-muted">
-                <span className="font-mono text-xs mr-1">{String(m.id).padStart(2, '0')}</span>
-                {m.title}
-              </div>
-              <div className="text-xs text-muted/70">→ {m.artifact}</div>
-            </div>
-          </div>
-        )
-      })}
+        })
+      )}
     </div>
   )
 }
