@@ -37,6 +37,8 @@ interface StartupState {
   ) => Promise<void>
   markLessonComplete: (lessonId: string) => Promise<void>
   setQuizResult: (lessonId: string, score: number) => Promise<void>
+  /** Choose the Season 1 path (venture / nonprofit / autonomous). */
+  setPath: (path: 'venture' | 'nonprofit' | 'autonomous') => Promise<void>
   /** Merge structured fields into a slot (used by the reusable form artifact).
    * Merges rather than replaces so two modules writing the same slot (e.g. M1
    * and M3 both write `market`) accumulate instead of clobbering. */
@@ -126,6 +128,16 @@ export const useStartup = create<StartupState>((set, get) => ({
     if (!cur) return
     const next: Startup = structuredClone(cur)
     next.meta.quizResults = { ...next.meta.quizResults, [lessonId]: score }
+    await persist(next)
+    set({ startup: next })
+  },
+
+  async setPath(path) {
+    const cur = get().startup
+    if (!cur) return
+    const next: Startup = structuredClone(cur)
+    next.meta.path = path
+    next.meta.pathChosen = true
     await persist(next)
     set({ startup: next })
   },

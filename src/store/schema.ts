@@ -42,6 +42,9 @@ export const Meta = z.object({
   // lessonId -> question step-ids still missed after the retry round; replayed
   // as warm-up review at the start of the next lesson.
   reviewQueue: z.record(z.string(), z.array(z.string())).default({}),
+  // Season 1 path chosen at lesson 0.1; curates which modules appear.
+  path: z.enum(['venture', 'nonprofit', 'autonomous']).default('venture'),
+  pathChosen: z.boolean().default(false),
 })
 
 export const Thesis = z.object({

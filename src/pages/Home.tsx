@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { SEASONS } from '../content/course'
 import { modulesBySeason } from '../content'
+import { PATHS, orderedModulesForPath } from '../content/paths'
 import { useStartup } from '../store/useStartup'
 import { hasKey } from '../ai/client'
 import { levelFromXp, levelProgress } from '../game/achievements'
@@ -81,10 +82,12 @@ function PathNode({
 export function Home() {
   const navigate = useNavigate()
   const startup = useStartup((s) => s.startup)
+  const setPath = useStartup((s) => s.setPath)
   const completed = new Set(startup?.meta.completedLessons ?? [])
   const [season, setSeason] = useState<1 | 2>(1)
+  const path = startup?.meta.path ?? 'venture'
 
-  const modules = modulesBySeason(season)
+  const modules = season === 1 ? orderedModulesForPath(path) : modulesBySeason(2)
   const seasonMeta = SEASONS.find((s) => s.id === season)!
 
   return (
@@ -115,13 +118,35 @@ export function Home() {
       <p className="text-xs text-muted -mt-3">{seasonMeta.subtitle}</p>
 
       {season === 1 && (
-        <p className="text-xs text-muted -mt-3">
-          Builds a simulated company —{' '}
-          <Link to="/startup" className="text-accent underline">
-            view startup.json
-          </Link>
-          .
-        </p>
+        <>
+          <div>
+            <div className="text-xs font-mono uppercase tracking-wide text-muted mb-2">Your path</div>
+            <div className="grid grid-cols-3 gap-2">
+              {PATHS.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setPath(p.id)}
+                  className={`rounded-xl border px-2 py-2 text-center transition ${
+                    path === p.id ? 'border-accent bg-accent/10' : 'border-line bg-panel hover:border-accent/40'
+                  }`}
+                  title={p.blurb}
+                >
+                  <div className="text-xl">{p.emoji}</div>
+                  <div className={`text-[11px] mt-0.5 leading-tight ${path === p.id ? 'text-accent font-semibold' : 'text-muted'}`}>
+                    {p.label}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className="text-xs text-muted -mt-3">
+            Builds a simulated {path === 'nonprofit' ? 'non-profit' : path === 'autonomous' ? 'autonomous company' : 'company'} —{' '}
+            <Link to="/startup" className="text-accent underline">
+              view startup.json
+            </Link>
+            .
+          </p>
+        </>
       )}
 
       {season === 2 && (
@@ -154,8 +179,14 @@ export function Home() {
           const currentIdx = mod.lessons.findIndex((l) => !completed.has(l.id))
           return (
             <section key={mod.id}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-xs bg-accent text-ink rounded px-2 py-0.5">{String(mod.id).padStart(2, '0')}</span>
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span
+                  className={`font-mono text-xs rounded px-2 py-0.5 ${
+                    mod.bonus ? 'bg-warn text-ink' : 'bg-accent text-ink'
+                  }`}
+                >
+                  {mod.bonus ? 'BONUS' : String(mod.id).padStart(2, '0')}
+                </span>
                 <h2 className="font-semibold">{mod.title}</h2>
               </div>
               <p className="text-xs text-muted mb-4 ml-9">{mod.goal}</p>

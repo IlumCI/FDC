@@ -56,6 +56,8 @@ export type Step =
     }
   | { kind: 'resource'; id: string; title: string; items: { label: string; url: string; note?: string }[] }
   | { kind: 'document'; id: string; title: string; body: string; templateHref: string; docKey: string; docLabel: string }
+  // The very first card of the very first lesson: pick your Season 1 path.
+  | { kind: 'pathpicker'; id: string }
 
 export type GradedStep = Extract<Step, { kind: 'choice' | 'numeric' | 'rank' | 'categorize' }>
 
@@ -107,6 +109,8 @@ export function gradeStep(s: Step, a: Answer): boolean {
 /** Flatten a lesson into its ordered card list. */
 export function buildSteps(l: Lesson): Step[] {
   const steps: Step[] = []
+  // The very first lesson opens with the path chooser.
+  if (l.id === '0.1') steps.push({ kind: 'pathpicker', id: `${l.id}#path` })
   steps.push({ kind: 'info', id: `${l.id}#concept`, eyebrow: 'Concept', title: l.title, body: l.concept })
   steps.push({ kind: 'reframe', id: `${l.id}#reframe`, analogy: l.reframe.analogy, breaks: l.reframe.breaks })
   steps.push({ kind: 'info', id: `${l.id}#example`, eyebrow: 'Worked example', title: 'Worked example', body: l.workedExample })

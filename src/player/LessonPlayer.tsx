@@ -24,13 +24,14 @@ import {
   PlatformTaskCard,
   ResourceCard,
   DocumentCard,
+  PathPickerCard,
 } from './cards'
 import { HUD } from './HUD'
 import { Celebration } from './Celebration'
 import { TutorDrawer } from './Tutor'
 import { useStartup, type FinishLessonResult } from '../store/useStartup'
 import { hasKey } from '../ai/client'
-import { allLessons } from '../content'
+import { activeLessons } from '../content/paths'
 
 const START_HEARTS = 5
 
@@ -47,10 +48,11 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const navigate = useNavigate()
   const startup = useStartup((s) => s.startup)
   const finishLesson = useStartup((s) => s.finishLesson)
+  const path = startup?.meta.path ?? 'venture'
 
   // Previous lesson's carried-over misses (warm-up review). Snapshot at mount.
   const { warmupSteps, prevLessonId, prevReviewIds } = useMemo(() => {
-    const all = allLessons()
+    const all = activeLessons(path)
     const idx = all.findIndex((l) => l.id === lesson.id)
     const prev = idx > 0 ? all[idx - 1] : null
     const ids = prev ? startup?.meta.reviewQueue[prev.id] ?? [] : []
@@ -159,7 +161,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   }
 
   if (result) {
-    const all = allLessons()
+    const all = activeLessons(path)
     const idx = all.findIndex((l) => l.id === lesson.id)
     const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null
     return (
@@ -192,6 +194,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-4 py-6" key={step.id}>
+          {step.kind === 'pathpicker' && <PathPickerCard />}
           {step.kind === 'info' && <InfoCard step={step} />}
           {step.kind === 'reframe' && <ReframeCard step={step} />}
           {step.kind === 'divider' && <DividerCard step={step} />}
