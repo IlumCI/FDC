@@ -207,7 +207,7 @@ Why this is the load-bearing chart: a flattening curve means acquisition compoun
           title: 'Retention curves & cohorts (real benchmarks and method)',
           items: [
             { label: "Lenny Rachitsky — What is good retention?", url: 'https://www.lennysnewsletter.com/p/what-is-good-retention-issue-29', note: 'The benchmark study: a flattening curve is the strongest signal of product-market fit; benchmarks by business model.' },
-            { label: 'Casey Winters (Casey Accidental) — What is good retention', url: 'https://caseyaccidental.com/what-is-good-retention', note: 'Companion write-up on reading the flattening point and why it beats the six-month rate for transactional businesses.' },
+            { label: 'Lenny Rachitsky — How to increase your retention', url: 'https://www.lennysnewsletter.com/p/how-to-increase-your-retention-issue', note: 'The practical companion: once you can read a cohort curve, the levers that actually move retention.' },
             { label: 'Sequoia — Retention', url: 'https://articles.sequoiacap.com/retention', note: 'Why retention is the foundation the whole growth model sits on, and how to read cohort curves.' },
             { label: 'a16z — Retention benchmarks (incl. the "smiling" curve)', url: 'https://a16z.com/ai-retention-benchmarks/', note: 'Modern benchmarks and the rare resurrection/smiling curve where lapsed users return.' },
           ],

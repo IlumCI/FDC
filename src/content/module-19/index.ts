@@ -451,7 +451,6 @@ The result after a quarter: two inbound intro requests (from the public posts), 
           body: 'Time to run the system for real. This week, send three genuine messages: warm intros you offer to make, reconnects to weak ties you have let decay, or specific asks built the 19.3 way. Make each one real — reference something specific about the person, and give before (or instead of) asking wherever you can. Then log them in your venture workspace so this becomes a repeatable habit, not a one-off. This is the milestone task for the module: the whole point is to move from model to practice.',
           links: [
             { label: 'Fred Wilson: The Double Opt-In Introduction', url: 'https://avc.com/2009/11/the-double-optin-introduction/' },
-            { label: 'Dex: how to use a personal CRM for networking', url: 'https://blog2.getdex.com/blog/personal-crm-networking-guide/' },
           ],
           steps: [
             'Pick three real people: at least one weak tie to reconnect with, and at least one where you can give value first.',
