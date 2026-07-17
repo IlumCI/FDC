@@ -118,6 +118,9 @@ export interface Lesson {
   commitSummary: string
 }
 
+/** Season 1 sub-path the learner chooses at lesson 0.1. */
+export type Path = 'venture' | 'nonprofit' | 'autonomous'
+
 export interface Module {
   id: number
   title: string
@@ -125,4 +128,10 @@ export interface Module {
   lessons: Lesson[]
   /** 1 = Foundations (simulated), 2 = Building for Real. Defaults to 1. */
   season?: 1 | 2
+  /** A curated bonus module for a specific Season 1 path (shows a BONUS tag). */
+  bonus?: boolean
+  /** Paths this module appears on. Undefined = shared across all paths. */
+  paths?: Path[]
+  /** For a bonus module: the default module id it slots in after, in the path route. */
+  insertAfter?: number
 }

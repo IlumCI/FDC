@@ -563,3 +563,49 @@ export function DocumentCard({ step }: { step: Extract<Step, { kind: 'document' 
     </div>
   )
 }
+
+// The Season 1 path chooser — the very first card. Sets the learner's path,
+// which curates which modules appear on the course route.
+export function PathPickerCard() {
+  const startup = useStartup((s) => s.startup)
+  const setPath = useStartup((s) => s.setPath)
+  const current = startup?.meta.path ?? 'venture'
+  const options: { id: 'venture' | 'nonprofit' | 'autonomous'; emoji: string; label: string; blurb: string }[] = [
+    { id: 'venture', emoji: '🚀', label: 'Venture startup', blurb: 'Build a for-profit company. The classic path — everything the course was built around.' },
+    { id: 'nonprofit', emoji: '🤝', label: 'Non-profit', blurb: 'Build a mission-driven organization: impact over profit, funders, grants, and governance.' },
+    { id: 'autonomous', emoji: '🤖', label: 'Autonomous corporation', blurb: 'Build a company run by AI agents and software — you set direction and guardrails.' },
+  ]
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-wide text-accent mb-2">Choose your path</div>
+      <h2 className="text-xl font-bold mb-2">What are you building?</h2>
+      <p className="text-sm text-muted mb-4">
+        This curates Season 1 for you — you'll see bonus lessons tailored to your path, and a few default modules
+        swapped for ones that fit. You can change this anytime from the course screen.
+      </p>
+      <div className="space-y-2.5">
+        {options.map((o) => {
+          const sel = current === o.id
+          return (
+            <button
+              key={o.id}
+              onClick={() => setPath(o.id)}
+              className={`w-full text-left px-4 py-3 rounded-xl border transition ${
+                sel ? 'border-accent bg-accent/10' : 'border-line bg-panel hover:border-accent/50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{o.emoji}</span>
+                <span className={`font-semibold ${sel ? 'text-accent' : 'text-fg'}`}>{o.label}</span>
+                {o.id === 'venture' && <span className="text-[10px] text-muted border border-line rounded px-1.5 py-0.5">default</span>}
+                {sel && <span className="ml-auto text-accent text-sm">✓ selected</span>}
+              </div>
+              <div className="text-sm text-muted mt-1">{o.blurb}</div>
+            </button>
+          )
+        })}
+      </div>
+      <p className="text-xs text-muted mt-3">Tap a path, then press CONTINUE. (Default is Venture — you're set either way.)</p>
+    </div>
+  )
+}
